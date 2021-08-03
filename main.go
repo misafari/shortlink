@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 	"ir.safari.shortlink/api/gen"
+	"ir.safari.shortlink/api/http"
 	"ir.safari.shortlink/api/rpc"
 	"ir.safari.shortlink/repository"
 	"log"
@@ -43,6 +45,15 @@ func main() {
 	}
 
 	urlRepository := repository.NewOriginalUrlRepository(client, ctx)
+
+	// init http server
+	httpController := http.NewController(urlRepository)
+	router := gin.Default()
+
+	v1 := router.Group("/api/v1/shl")
+	{
+		v1.GET("/:code", httpController.RedirectHandler)
+	}
 
 	// init rpc server
 	lis, err := net.Listen("tcp", rpcPort)

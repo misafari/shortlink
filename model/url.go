@@ -7,6 +7,7 @@ import (
 
 type Url struct {
 	ID          primitive.ObjectID `bson:"_id"`
+	Code        string             `bson:"code"`
 	OriginalUrl string             `bson:"original_url"`
 	Key         string             `bson:"key"`
 	CreatedAt   time.Time          `bson:"created_at"`
@@ -39,4 +40,9 @@ func (b *UrlBuilder) SetUserId(userId int32) *UrlBuilder {
 func (b *UrlBuilder) Build() *Url {
 	b.url.CreatedAt = time.Now()
 	return b.url
+}
+
+func (b *UrlBuilder) SetCode(code string) *UrlBuilder {
+	b.url.Code = code
+	return b
 }

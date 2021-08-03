@@ -31,7 +31,7 @@ func TestPing(t *testing.T) {
 func dialer() func(context.Context, string) (net.Conn, error) {
 	listener := bufconn.Listen(1024 * 1024)
 	server := grpc.NewServer()
-	rpcHandler := rpc2.NewServiceRpcImpl()
+	rpcHandler := rpc2.NewServiceRpcImpl(nil)
 
 	gen.RegisterShortLinkRpcServiceServer(server, rpcHandler)
 

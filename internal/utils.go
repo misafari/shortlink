@@ -3,10 +3,11 @@ package internal
 import (
 	"crypto/md5"
 	"encoding/base64"
+	"fmt"
 )
 
-func ShortUrlGenerator(url string) string {
-	data := []byte(url)
+func ShortUrlGenerator(key, url string) string {
+	data := []byte(fmt.Sprintf("%s:%s", key, url))
 
 	hasher := md5.New()
 	hasher.Write(data)

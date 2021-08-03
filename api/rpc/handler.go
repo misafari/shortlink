@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 	"ir.safari.shortlink/api/gen"
+	"ir.safari.shortlink/internal"
 	"ir.safari.shortlink/model"
 	"ir.safari.shortlink/repository"
 )
@@ -24,7 +25,14 @@ func NewServiceRpcImpl(originalUrlRepository repository.OriginalUrlRepository) *
 
 func (s *ServiceRpcImpl) CreateShortLink(_ context.Context, request *gen.CreateShortLinkRequest) (*gen.CreateShortLinkResponse, error) {
 	orb := model.NewUrlBuilder()
-	orb.SetOriginalUrl(request.OriginalUrl)
+	orb.SetOriginalUrl(request.GetOriginalUrl()).
+		SetKey(request.GetKey()).
+		SetUserId(request.GetUserId()).
+		SetCode(internal.ShortUrlGenerator(request.GetKey(), request.GetOriginalUrl()))
+
+	if err := s.originalUrlRepository.InsertOne(orb.Build(), request.GetExpiredTime()); err != nil {
+		return nil, err
+	}
 
 	return nil, nil
 }
